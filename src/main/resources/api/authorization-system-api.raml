@@ -1,0 +1,88 @@
+#%RAML 1.0
+title: Authorization System API
+description: This Authorization system API will be used for OTP generation. Through PAPI this SAPI will get generate OTP request. This SAPI will call external SMS API to generate OTP. 
+traits:
+  clientinforcement: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-traits/1.0.2/Client-ID-enforcement-headers-traits.raml
+  common: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-traits/1.0.2/Common-headers-traits.raml
+  membersqueryParams: !include exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-traits/1.0.2/members-get-list-queryParams-trait.raml
+
+types:
+  getOTPResponse: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-datatypes/1.0.3/authorization/get-otp-response-dataType.raml
+  postOTPRequest: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-datatypes/1.0.3/authorization/post-otp-request-dataType.raml
+  postOTPResponse: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-datatypes/1.0.3/authorization/post-otp-response-dataType.raml 
+  commonError: !include /exchange_modules/c6331416-bf30-4410-b4a7-a62d42653ea5/fragment-common-datatypes/1.0.3/common/error-response-dataType.raml
+/members:
+  /memberId:
+    /otp:
+      get:
+        description: This API will fetch member details based on the OTP
+        is: [clientinforcement, common]
+        responses:
+          200:
+            body:
+              application/json:
+                description: schema to insert a new Member details in SFDC 
+                type: getOTPResponse       
+                example: !include Examples/get-otp-response-example.json          
+          400:
+            description: The input contains invalid data 400 satus code
+            body:
+              application/json:
+                type: commonError
+                example: !include Examples/error-401-response-example.json    
+          404:
+            description: The URI requested is invalid or the resource requested does not exists
+            body:
+              application/json:
+                type: commonError
+                example: !include Examples/error-404-response-example.json               
+          500:
+            description: Internal server error
+            body:
+              application/json:
+                type: commonError
+                example: !include Examples/error-500-response-example.json
+  /otp:   
+    post:
+      description: This API recieves OTP request from PAPI to call exeternal SMS API to generate OTP  .
+      is: [clientinforcement,common]
+      body:
+        application/json:
+          description: schema to insert a new Member details in SFDC 
+          type: postOTPRequest        
+          example: !include Examples/post-otp-request-example.json                   
+      responses:
+        200:
+          body:
+            application/json:
+              type: postOTPResponse                                                                       
+              example: !include Examples/post-otp-response-example.json                                 
+        400:
+          description: The input contains invalid data 400 satus code
+          body:
+            application/json:
+              type: commonError
+              example: !include Examples/error-400-response-example.json
+        401:
+          description: Output message for Get Member Details 401 status code
+          body:
+            application/json:
+              type: commonError
+              example: !include Examples/error-401-response-example.json   
+        404:
+          description: The URI requested is invalid or the resource requested does not exists
+          body:
+            application/json:
+              type: commonError
+              example: !include Examples/error-404-response-example.json
+        500:
+          description: Internal server error
+          body:
+            application/json:
+              type: commonError
+              example: !include Examples/error-500-response-example.json
+
+
+
+        
+  
